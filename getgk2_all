@@ -1,0 +1,16 @@
+#!/bin/bash
+
+[ "$(ls *.log 2>/dev/null)" ] && ls *.log >logfilename || ls *.m3dout >logfilename
+
+
+if [ -f gdatatime_all ]
+   then
+      rm gdatatime_all
+fi
+
+cat logfilename | while read logfile
+do 
+getgk2 $logfile >>gdatatime_all
+done
+rm logfilename
+tail gdatatime_all

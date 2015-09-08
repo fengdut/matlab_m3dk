@@ -1,0 +1,2 @@
+#!/bin/bash -f
+awk '$1=="g"{print tim,$2,$3};$1=="ncy,tim,dt="{tim=$3};' $1
