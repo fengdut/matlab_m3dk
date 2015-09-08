@@ -1,21 +1,20 @@
 
-function [data]=plotm3dh5(filename,planeid,timeframe,dataid)
-%plotm3dh5 plot M3D hdf5 output data as 2D contour.
-%plotm3dh5('3d.001.h5'); plot the first variable at the first time step and
-%the first plane.
-%plotm3dh5('3d.001.h5',1,1,9); plot the 9th variable at the first time step and
-%the first plane.
-%the output [data] is a 2D variable ploted.
+function [R_mid,Data_mid]=plotm3dh5_mid(filename,planeid,timeframe,dataid)
+%plotm3dh5_mid plot M3D hdf5 output data as 3D contour.
+%plotm3dh5_mid('3d.001.h5'); plot the first variable at the first time step and
+%the first plane at mid plane (Z=0).
+%plotm3dh5_mid('3d.001.h5',1,1,9); plot the 9th variable at the first time step.
+%the output [R_mid, Data_mid] is a R coordinate and variable ploted.
 if(nargin<1)
     error('filename');
 end
 if(nargin<2)
-    planeid=1;                                  %plane id
-    timeframe=1;                                %time frame
-    dataid =1;                                  %data id to plot
+    planeid=1                               %plane id
+    dataid =1;                              %data id to plot
+    timeframe=1;
 else if(nargin<3)
     nargin
-    error('filename, planeid,timeframe, dataid');
+    error('filename, planeid, dataid');
     end
 end
 
@@ -38,7 +37,6 @@ planes_no=data_planes(1)
 coordinates_name=g_coordinates.Groups.Datasets.Name;
 
 data_coordinates=hdf5read(filename,coordinates_name);
-
 coordinates_X=data_coordinates(1,:);
 coordinates_Y=data_coordinates(2,:);
 coordinates_Z=data_coordinates(3,:);
@@ -53,49 +51,34 @@ Y=coordinates_Y(:,planeid);
 Z=coordinates_Z(:,planeid);
 
 
+
+
 data_group=g_node_data.Groups;
 data_no=size(g_node_data.Groups,2);
 
 data_title='';
 for i=1:1:data_no
-
     data_titleV=hdf5read(data_group(i).Attributes(2));
     data_title=sprintf('%s %d %s\n',data_title,i,data_titleV.Data);
-    
 end
 data_title
+
 
 data_titleV=hdf5read(data_group(dataid).Attributes(2));
 data_title=data_titleV.Data;
     
-
 data_name=data_group(dataid).Datasets.Name;
 data=hdf5read(filename,data_name);
 
 data=reshape(data,cell_no,planes_no);
 data=data(:,planeid);
 
-
 X=double(X);
 Y=double(Y);
 R=(X.^2+Y.^2).^0.5;
 Z=double(Z);
 
-
 data=double(data);
-tri=delaunay(R,Z);
-
-
-set(gcf,'Units','points','position',[50 100 500 800],'Color',[1 1 1]);
-hax3=axes('Position',[0.14 0.1 0.8 0.8],'FontSize',20); 
-
-trisurf(tri,R,Z,data,'FaceColor','interp','EdgeColor','interp');
-view(2);
-xlabel('$R$');
-ylabel('$Z$');
-xlim([0.3 2.5]);
-%ylim([-2.3 2.3]);
-%axis('equal');
 
 ss=size(data_title);
 ss=ss(2);
@@ -105,17 +88,31 @@ for i=1:1:ss
     end
 end
     data_t(1:i-1)=data_title(1:i-1);
-titlestring=sprintf('$time=%4.2f, %s $',atime,data_t);
+titlestring=sprintf('time=%4.2f, %s',atime,data_t);
 title(titlestring);
 
-%set(gcf, 'PaperPositionMode','auto');
-%filename_out=sprintf('%s_%s.png',filename,titlestring);
-%print(gcf,filename_out,'-dpng','-r300');
-%  set(gcf, 'Renderer', 'painters');
-% filename_out=sprintf('%s_%s.eps',filename,titlestring);
-% print(gcf,filename_out,'-depsc2');
+global gR gZ gData;
+gR=R;
+gZ=Z;
+gData=data;
 
 
 
+n=size(Z);
+n=n(1);
+j=1;
+for i=1:1:n
+    if(abs(Z(i))<=1e-10)
+        R_mid(j)=R(i);
+        Data_mid(j)=data(i);
+        j=j+1;
+    end
+end
+
+plot(R_mid,Data_mid,'*','MarkerSize',6);
+xlabel('$R$');
+
+titlestring=sprintf('time=%4.2f, %s',atime,data_t);
+title(titlestring);
 
 
