@@ -93,7 +93,7 @@ trisurf(tri,R,Z,data,'FaceColor','interp','EdgeColor','interp');
 view(2);
 xlabel('$R$');
 ylabel('$Z$');
-xlim([0.3 2.5]);
+%xlim([0.3 2.5]);
 %ylim([-2.3 2.3]);
 %axis('equal');
 
