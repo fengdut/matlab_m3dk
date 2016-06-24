@@ -68,11 +68,7 @@ trisurf(tri,R,Z,data,'FaceColor','interp','EdgeColor','interp');
 view(2);
 xlabel('$R$');
 ylabel('$Z$');
-<<<<<<< HEAD
 % xlim([0.3 2.5]);
-=======
-%xlim([0.3 2.5]);
->>>>>>> 6827294c5ddf7562646462d6c7290fbe602e7a10
 %ylim([-2.3 2.3]);
 %axis('equal');
 
